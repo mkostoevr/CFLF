@@ -68,12 +68,12 @@ static void ConfigureStatusLabel(PCONTROL pcBotControlButton) {
 
 static void ConfigureInterface(PUI pUserInterface) {
     ConfigureBotControlButton(&pUserInterface->cBotControlButton);
-    ConfigureStatusLabel(&pUserInterface->cDebugLabel);
+    ConfigureStatusLabel(&pUserInterface->cStatusLabel);
 }
 
 static void CreateInterface(PUI pUserInterface) {
     CreateControl(&pUserInterface->cBotControlButton);
-    CreateControl(&pUserInterface->cDebugLabel);
+    CreateControl(&pUserInterface->cStatusLabel);
 }
 
 static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {

@@ -25,12 +25,12 @@ static VOID FindGame(PBOT pBot) {
                 StrCat(szStatus, szX, 256);
                 StrCat(szStatus, ":", 256);
                 StrCat(szStatus, szY, 256);
-                SetWindowText(userInterface.cDebugLabel.hHandle, szStatus);
+                SetWindowText(userInterface.cStatusLabel.hHandle, szStatus);
                 goto FIRST_BROWN_TAB_UPPER_LEFTER_CORNER_COORDINATES_FOUND;
             }
         }
     }
-    SetWindowText(userInterface.cDebugLabel.hHandle, LOCAL_BOT_gameNotFound);
+    SetWindowText(userInterface.cStatusLabel.hHandle, LOCAL_BOT_gameNotFound);
     pBot->bGameIsFound = FALSE;
     goto CLEANUP_AND_RETURN;
 FIRST_BROWN_TAB_UPPER_LEFTER_CORNER_COORDINATES_FOUND:
@@ -88,7 +88,7 @@ static DWORD WINAPI BotCicle(LPVOID lpParam) {
                 // color not changes, that means that the game is lost, and it's time to find it again
                 if (nEscPressed > 100) {
                     pBot->bGameIsFound = FALSE;
-                    SetWindowText(userInterface.cDebugLabel.hHandle, LOCAL_BOT_gameIsLost);
+                    SetWindowText(userInterface.cStatusLabel.hHandle, LOCAL_BOT_gameIsLost);
                 }
                 if (pBot->bGameIsFound == FALSE) {
                     FindGame(pBot);
