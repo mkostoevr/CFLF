@@ -62,6 +62,9 @@ static DWORD WINAPI BotCicle(LPVOID lpParam) {
     static LONG nEscPressed = 0;
     pBot->bGameIsFound = FALSE;
     while (pBot->bIsWorking) {
+        // without this condition the bot would try to play when its own window is in focus
+        // so it would frequently press SPACE key, what activates last pressed button's click event
+        // it looks ugly when after bot activating the button starts frequently click itself
         if (GetForegroundWindow() != userInterface.cMainWindow.hHandle) {
             const COLORREF cUsualGameplayArcVertexColor = 0x33B032;
             const COLORREF cUsualPlusButtonCenterColor = 0x614707;
