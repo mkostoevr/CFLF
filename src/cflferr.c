@@ -60,7 +60,7 @@ VOID Error(LPCSTR szErrorLocation) {
         userInterface.cMainWindow.lpWindowName,
         MB_ICONERROR | MB_OK
         );
-    
+    HeapFree(process.hHeap, 0, szErrorMessage);
 }
 
 VOID FatalError(LPCSTR szErrorLocation) {
