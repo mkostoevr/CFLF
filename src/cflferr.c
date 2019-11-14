@@ -6,7 +6,7 @@ static LPSTR GetErrorString(DWORD dwErrorCode) {
     DWORD dwErrorStringBufferSize;
     if(dwErrorCode == 0) {
         szErrorString = HeapAlloc(process.hHeap, 0, sizeof(LOCAL_ERR_noError));
-        StrCpy(szErrorString, LOCAL_ERR_noError, sizeof(LOCAL_ERR_noError));
+        lstrcpyA(szErrorString, LOCAL_ERR_noError);
         return szErrorString;
     }
     dwErrorStringBufferSize = FormatMessageA(
@@ -19,7 +19,7 @@ static LPSTR GetErrorString(DWORD dwErrorCode) {
         NULL
         );
     szErrorString = HeapAlloc(process.hHeap, 0, dwErrorStringBufferSize + 1);
-    StrCpy(szErrorString, szErrorStringBuffer, dwErrorStringBufferSize + 1);
+    lstrcpyA(szErrorString, szErrorStringBuffer);
     LocalFree(szErrorStringBuffer);
     return szErrorString;
 }
@@ -34,17 +34,17 @@ static LPSTR CreateErrorMessage(DWORD dwErrorCode, LPCSTR szErrorLocation) {
     nMessageSize = sizeof(LOCAL_ERR_errorNumber)
         + sizeof(szErrorCode)
         + sizeof(LOCAL_ERR_atLocation)
-        + StrLen(szErrorLocation)
+        + lstrlenA(szErrorLocation)
         + sizeof(LOCAL_ERR_moreInfo)
-        + StrLen(szErrorInfo)
+        + lstrlenA(szErrorInfo)
         + 1;
     szMessage = HeapAlloc(process.hHeap, 0, nMessageSize);
-    StrCpy(szMessage, LOCAL_ERR_errorNumber, nMessageSize);
-    StrCat(szMessage, szErrorCode, nMessageSize);
-    StrCat(szMessage, LOCAL_ERR_atLocation, nMessageSize);
-    StrCat(szMessage, szErrorLocation, nMessageSize);
-    StrCat(szMessage, LOCAL_ERR_moreInfo, nMessageSize);
-    StrCat(szMessage, szErrorInfo, nMessageSize);
+    lstrcpyA(szMessage, LOCAL_ERR_errorNumber);
+    lstrcatA(szMessage, szErrorCode);
+    lstrcatA(szMessage, LOCAL_ERR_atLocation);
+    lstrcatA(szMessage, szErrorLocation);
+    lstrcatA(szMessage, LOCAL_ERR_moreInfo);
+    lstrcatA(szMessage, szErrorInfo);
     HeapFree(process.hHeap, 0, szErrorInfo);
     return szMessage;
 }

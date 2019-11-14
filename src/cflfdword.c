@@ -17,8 +17,8 @@ static void Reverse(LPSTR str, int length) {
 }
 
 LPSTR DwordToStr(DWORD dwNumber, LPSTR szDestination, int base, LPCSTR szPrefix) {
-    int prefixLength = StrLen(szPrefix);
-    StrCpy(szDestination, szPrefix, prefixLength + 1);
+    int prefixLength = lstrlenA(szPrefix);
+    lstrcpyA(szDestination, szPrefix);
     int i = 0;
     szDestination += prefixLength;
     // If zero won't be handled individually, empty string will be printed

@@ -17,7 +17,6 @@
 #include <cflflocal.h>
 #include <cflfproc.h>
 #include <cflfscr.h>
-#include <cflfstr.h>
 #include <cflfui.h>
 
 VARDEC BOT bot; // cflfbot.c

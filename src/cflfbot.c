@@ -17,14 +17,18 @@ static VOID FindGame(PBOT pBot) {
             COLORREF cPixel = GetBitmapPixel(pBot->fbmp, x, y);
             const COLORREF cUsualFirstGrayTabUpperLefterCornerColor = 0x482927;
             if (cPixel == cUsualFirstGrayTabUpperLefterCornerColor) {
-                CHAR szX[11];
-                CHAR szY[11];
-                CHAR szStatus[256] = LOCAL_BOT_gameFirstGrayTabFoundAt;
+                const UINT bcX = 11;
+                const UINT bcY = 11;
+                const UINT bcStatus = sizeof(LOCAL_BOT_gameFirstGrayTabFoundAt) + bcX + 1 + bcY;
+                CHAR szX[bcX];
+                CHAR szY[bcY];
+                CHAR szStatus[bcStatus];
                 DwordToStr(x, szX, 10, "");
                 DwordToStr(y, szY, 10, "");
-                StrCat(szStatus, szX, 256);
-                StrCat(szStatus, ":", 256);
-                StrCat(szStatus, szY, 256);
+                lstrcpyA(szStatus, LOCAL_BOT_gameFirstGrayTabFoundAt);
+                lstrcatA(szStatus, szX);
+                lstrcatA(szStatus, ":");
+                lstrcatA(szStatus, szY);
                 SetWindowText(userInterface.cStatusLabel.hHandle, szStatus);
                 goto FIRST_BROWN_TAB_UPPER_LEFTER_CORNER_COORDINATES_FOUND;
             }

@@ -7,7 +7,6 @@
 #   include "cflferr.c"
 #   include "cflfproc.c"
 #   include "cflfscr.c"
-#   include "cflfstr.c"
 #   include "cflfui.c"
 #endif
 
