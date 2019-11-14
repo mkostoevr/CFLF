@@ -17,6 +17,7 @@ static void Reverse(LPSTR str, int length) {
 }
 
 LPSTR DwordToStr(DWORD dwNumber, LPSTR szDestination, int base, LPCSTR szPrefix) {
+    LPSTR szOrigDestination = szDestination;
     int prefixLength = lstrlenA(szPrefix);
     lstrcpyA(szDestination, szPrefix);
     int i = 0;
@@ -25,7 +26,7 @@ LPSTR DwordToStr(DWORD dwNumber, LPSTR szDestination, int base, LPCSTR szPrefix)
     if (dwNumber == 0) {
         szDestination[i++] = '0';
         szDestination[i] = '\0';
-        return szDestination;
+        return szOrigDestination;
     }
     while (dwNumber != 0) {
         int rem = dwNumber % base;
@@ -34,5 +35,5 @@ LPSTR DwordToStr(DWORD dwNumber, LPSTR szDestination, int base, LPCSTR szPrefix)
     }
     szDestination[i] = '\0';
     Reverse(szDestination, i);
-    return szDestination;
+    return szOrigDestination;
 }
