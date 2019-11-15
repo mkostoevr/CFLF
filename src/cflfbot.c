@@ -109,7 +109,6 @@ static DWORD WINAPI BotCicle(LPVOID lpParam) {
             COLORREF cGameplayArcVertex;
             COLORREF cPlusButtonCenter;
 
-            // < 80ms
             if (UpdateBotBitmap(pBot) == FALSE) {
                 Error(FILE_LINE);
             }
@@ -125,7 +124,10 @@ static DWORD WINAPI BotCicle(LPVOID lpParam) {
             // anyway, each window in the game may be closed pressing ESC key
             cPlusButtonCenter = GetBitmapPixel(pBot->fbmp, pBot->pPlusButtonCenter.x, pBot->pPlusButtonCenter.y);
             if (cPlusButtonCenter != cPlusButtonCenterUsual) {
+                // if bot won't sleep here, before and between keyboard emulation, it may be detected
+                SleepBot(pBot);
                 keybd_event(VK_ESCAPE, 0x45, KEYEVENTF_EXTENDEDKEY | 0, 0);
+                SleepBot(pBot);
                 keybd_event(VK_ESCAPE, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
                 nEscPressed++;
                 // if the button has no its usual gray color, and after 100-time ESC key simulating the

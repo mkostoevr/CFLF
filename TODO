@@ -1,10 +1,5 @@
-Algorithm: too fast esc keydown and keyup may be catched
-    
-    cflfbot.c
-    keybd_event(VK_ESCAPE, 0x45, KEYEVENTF_EXTENDEDKEY | 0, 0);
-    keybd_event(VK_ESCAPE, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-
-Optimization: use MSVCRT.DLL functions instead of hand-written ones 
+Optimization: use MSVCRT.DLL DwordToStr instead of hand-written ones
+Optimization: use MSVCRT.DLL strcpy and strcat functions instead of KERNEL32 ones?
 
 Profiler:
 
