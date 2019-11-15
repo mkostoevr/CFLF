@@ -4,12 +4,6 @@ Algorithm: too fast esc keydown and keyup may be catched
     keybd_event(VK_ESCAPE, 0x45, KEYEVENTF_EXTENDEDKEY | 0, 0);
     keybd_event(VK_ESCAPE, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
 
-Refactoring: wrong control variable names
-    
-    cflfui.c
-
-    static void ConfigureStatusLabel(PCONTROL pcBotControlButton)
-
 Optimization: use MSVCRT.DLL functions instead of hand-written ones 
 
 Profiler:

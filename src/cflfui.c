@@ -52,19 +52,19 @@ static void ConfigureBotControlButton(PCONTROL pcBotControlButton) {
     pcBotControlButton->lpParam = NULL;
 }
 
-static void ConfigureStatusLabel(PCONTROL pcBotControlButton) {
-    pcBotControlButton->dwExStyle = 0;
-    pcBotControlButton->lpClassName = "Static";
-    pcBotControlButton->lpWindowName = LOCAL_UI_initialStatus;
-    pcBotControlButton->dwStyle = WS_VISIBLE | WS_CHILD;
-    pcBotControlButton->X = 0;
-    pcBotControlButton->Y = 32;
-    pcBotControlButton->nWidth = 250;
-    pcBotControlButton->nHeight = 48;
-    pcBotControlButton->hWndParent = userInterface.cMainWindow.hHandle;
-    pcBotControlButton->hMenu = NULL;
-    pcBotControlButton->hInstance = userInterface.cMainWindow.hInstance;
-    pcBotControlButton->lpParam = NULL;
+static void ConfigureStatusLabel(PCONTROL pcStatusLabel) {
+    pcStatusLabel->dwExStyle = 0;
+    pcStatusLabel->lpClassName = "Static";
+    pcStatusLabel->lpWindowName = LOCAL_UI_initialStatus;
+    pcStatusLabel->dwStyle = WS_VISIBLE | WS_CHILD;
+    pcStatusLabel->X = 0;
+    pcStatusLabel->Y = 32;
+    pcStatusLabel->nWidth = 250;
+    pcStatusLabel->nHeight = 48;
+    pcStatusLabel->hWndParent = userInterface.cMainWindow.hHandle;
+    pcStatusLabel->hMenu = NULL;
+    pcStatusLabel->hInstance = userInterface.cMainWindow.hInstance;
+    pcStatusLabel->lpParam = NULL;
 }
 
 static void ConfigureSleepTimeEdit(PCONTROL pcSpeedEdit) {
