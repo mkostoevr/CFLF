@@ -26,6 +26,8 @@ typedef struct tagUI {
     CONTROL cMainWindow;
     CONTROL cBotControlButton;
     CONTROL cStatusLabel;
+    CONTROL cSleepTimeEdit;
+    CONTROL cSleepTimeLabel;
 } UI, *PUI;
 
 FUNDEC VOID InitializeUserInterface(PUI pUserInterface);

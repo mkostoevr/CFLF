@@ -2,6 +2,14 @@
 
 VARDEF BOT bot;
 
+static VOID SleepBot(PBOT pBot) {
+    if (pBot->dwSleepTime > 0) {
+        Sleep(pBot->dwSleepTime);
+    } else {
+        return;
+    }
+}
+
 static BOOL FreeBotBitmap(PBOT pBot) {
     if (pBot->fbmp.hHandle != NULL) {
         if (DeleteObject(pBot->fbmp.hHandle) == FALSE) {
@@ -101,6 +109,7 @@ static DWORD WINAPI BotCicle(LPVOID lpParam) {
             COLORREF cGameplayArcVertex;
             COLORREF cPlusButtonCenter;
 
+            // < 80ms
             if (UpdateBotBitmap(pBot) == FALSE) {
                 Error(FILE_LINE);
             }
@@ -133,7 +142,7 @@ static DWORD WINAPI BotCicle(LPVOID lpParam) {
                 }
             }
         }
-        Sleep(pBot->nSleepTime);
+        SleepBot(pBot);
     }
     ExitThread(0);
 }
@@ -159,7 +168,7 @@ static VOID StopBot(PBOT pBot) {
 }
 
 VOID InitializeBot(PBOT pBot) {
-    pBot->nSleepTime = 250;
+    pBot->dwSleepTime = 250;
     pBot->bIsWorking = FALSE;
     pBot->bGameIsFound = FALSE;
     pBot->fbmp.hHandle = NULL;
@@ -173,4 +182,8 @@ VOID SwitchBotRunningState(PBOT pBot) {
         StartBot(pBot);
         SetWindowTextA(userInterface.cBotControlButton.hHandle, LOCAL_UI_stop);
     }
+}
+
+VOID SetBotSleepTime(PBOT pBot, DWORD dwSleepTime) {
+    pBot->dwSleepTime = dwSleepTime;
 }

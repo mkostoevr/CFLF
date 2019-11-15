@@ -17,6 +17,7 @@
 #   define LOCAL_BOT_gameFirstGrayTabFoundAt "Game first gray tab found at " 
 #   define LOCAL_BOT_gameIsLost "Game is lost, trying to find it again..."
 #   define LOCAL_UI_initialStatus "Press button under the label and click on game window to start"
+#   define LOCAL_UI_sleepTime "Time between catches (ms.)"
 #else
 #   define LOCAL_SYS_earlyError "Ошибка при запуске в "
 #   define LOCAL_UI_appName "CFLF"
@@ -32,4 +33,5 @@
 #   define LOCAL_BOT_gameFirstGrayTabFoundAt "Левый верхний угол первой коричневой вкладки найден в координатах "  
 #   define LOCAL_BOT_gameIsLost "Игра потеряна, пробую наёти её снова..."
 #   define LOCAL_UI_initialStatus "Нажми кнопку выше и кликни по окну с игрой для старта"
+#   define LOCAL_UI_sleepTime "Пауза между рывками (мс.)"
 #endif

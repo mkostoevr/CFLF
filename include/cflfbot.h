@@ -15,8 +15,9 @@ typedef struct tagBOT {
     BOOL bGameIsFound;
     DWORD dwThreadId;
     HANDLE hThread;
-    DWORD nSleepTime;
+    DWORD dwSleepTime;
 } BOT, *PBOT;
 
 FUNDEC VOID InitializeBot(PBOT pBot);
 FUNDEC VOID SwitchBotRunningState(PBOT pBot);
+FUNDEC VOID SetBotSleepTime(PBOT pBot, DWORD dwSleepTime);

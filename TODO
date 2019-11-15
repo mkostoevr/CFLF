@@ -1,12 +1,38 @@
-Optimization: set window text only if game is found
-
-    cflfbot.c
-    if (nEscPressed > 100) {
-        pBot->bGameIsFound = FALSE;
-        SetWindowText(userInterface.cStatusLabel.hHandle, LOCAL_BOT_gameIsLost);
-    }
-
-Optimization: too fast esc keydown and keyup may be catched
+Algorithm: too fast esc keydown and keyup may be catched
+    
     cflfbot.c
     keybd_event(VK_ESCAPE, 0x45, KEYEVENTF_EXTENDEDKEY | 0, 0);
     keybd_event(VK_ESCAPE, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+
+Refactoring: wrong control variable names
+    
+    cflfui.c
+
+    static void ConfigureStatusLabel(PCONTROL pcBotControlButton)
+
+Optimization: use MSVCRT.DLL functions instead of hand-written ones 
+
+Profiler:
+
+    #include <stdlib.h>
+    #include <stdio.h>
+    #include <string.h>static INT64 PerformanceCounter()
+    {
+        LARGE_INTEGER li;
+        QueryPerformanceCounter(&li);
+        return li.QuadPart;
+    }
+
+    static INT64 PerformanceFrequency()
+    {
+        LARGE_INTEGER li;
+        QueryPerformanceFrequency(&li);
+        return li.QuadPart;
+    }
+
+    INT64 start = PerformanceCounter();
+    INT64 finish = PerformanceCounter();
+    double elapsedMilliseconds = ((finish - start) * 1000.0) / PerformanceFrequency();
+    CHAR s[128];
+    sprintf(s, "%f", elapsedMilliseconds);
+    MessageBoxA(0, s, 0, 0);
