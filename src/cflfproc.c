@@ -6,6 +6,6 @@ VOID InitializeProcess(PPROCESS pProcess) {
     pProcess->hHeap = GetProcessHeap();
     pProcess->hInstance = GetModuleHandleA(NULL);
     if (pProcess->hHeap == NULL || pProcess->hInstance == NULL) {
-        EarlyFatalError(FILE_LINE);
+        FatalLowLevelError(FILE_LINE);
     }
 }

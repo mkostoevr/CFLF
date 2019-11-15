@@ -10,5 +10,5 @@
 
 FUNDEC VOID Error(LPCSTR szErrorLocation);
 FUNDEC VOID FatalError(LPCSTR szErrorLocation);
-FUNDEC VOID EarlyError(LPCSTR szErrorLocation);
-FUNDEC VOID EarlyFatalError(LPCSTR szErrorLocation);
+FUNDEC VOID LowLevelError(LPCSTR szErrorLocation);
+FUNDEC VOID FatalLowLevelError(LPCSTR szErrorLocation);

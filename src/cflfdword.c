@@ -1,14 +1,19 @@
 #include <cflf.h>
 
-static void Swap(PCHAR t1, PCHAR t2) {
-    CHAR temp = *t1;
+static VOID Swap(PCHAR t1, PCHAR t2) {
+    CHAR temp;
+
+    temp = *t1;
     *t1 = *t2;
     *t2 = temp;
 }
 
-static void Reverse(LPSTR str, int length) {
-    int start = 0;
-    int end = length -1;
+static VOID Reverse(LPSTR str, INT length) {
+    INT start;
+    INT end;
+
+    start = 0;
+    end = length -1;
     while (start < end) {
         Swap(str + start, str + end);
         start++;
@@ -16,23 +21,27 @@ static void Reverse(LPSTR str, int length) {
     }
 }
 
-LPSTR DwordToStr(DWORD dwNumber, LPSTR szDestination, int base, LPCSTR szPrefix) {
-    LPSTR szOrigDestination = szDestination;
-    int prefixLength = lstrlenA(szPrefix);
-    lstrcpyA(szDestination, szPrefix);
-    int i = 0;
-    szDestination += prefixLength;
-    // If zero won't be handled individually, empty string will be printed
-    if (dwNumber == 0) {
-        szDestination[i++] = '0';
-        szDestination[i] = '\0';
-        return szOrigDestination;
+LPSTR DwordToStr(DWORD dwNumber, LPSTR szDestination, INT base, LPCSTR szPrefix) {
+    LPSTR szOrigDestination;
+    INT bcPrefix;
+    INT i;
+
+    if (base > 36 || base == 0) {
+        SetLastError(ERROR_INVALID_PARAMETER);
+        return NULL;
     }
-    while (dwNumber != 0) {
-        int rem = dwNumber % base;
+    bcPrefix = lstrlenA(szPrefix);
+    lstrcpyA(szDestination, szPrefix);
+    szOrigDestination = szDestination;
+    szDestination += bcPrefix;
+    i = 0;
+    do {
+        INT rem;
+        
+        rem = dwNumber % base;
         szDestination[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
         dwNumber = dwNumber / base;
-    }
+    } while (dwNumber != 0);
     szDestination[i] = '\0';
     Reverse(szDestination, i);
     return szOrigDestination;

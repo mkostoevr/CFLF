@@ -4,8 +4,13 @@ static LPSTR GetErrorString(DWORD dwErrorCode) {
     LPSTR szErrorString;
     LPSTR szErrorStringBuffer;
     DWORD dwErrorStringBufferSize;
-    if(dwErrorCode == 0) {
+    HLOCAL hFreeResult;
+
+    if (dwErrorCode == 0) {
         szErrorString = HeapAlloc(process.hHeap, 0, sizeof(LOCAL_ERR_noError));
+        if (szErrorString == NULL) {
+            FatalLowLevelError(FILE_LINE);
+        }
         lstrcpyA(szErrorString, LOCAL_ERR_noError);
         return szErrorString;
     }
@@ -18,40 +23,58 @@ static LPSTR GetErrorString(DWORD dwErrorCode) {
         0,
         NULL
         );
+    if (dwErrorStringBufferSize == 0) {
+        FatalLowLevelError(FILE_LINE);
+    }
     szErrorString = HeapAlloc(process.hHeap, 0, dwErrorStringBufferSize + 1);
+    if (szErrorString == NULL) {
+        FatalLowLevelError(FILE_LINE);
+    }
     lstrcpyA(szErrorString, szErrorStringBuffer);
-    LocalFree(szErrorStringBuffer);
+    hFreeResult = LocalFree(szErrorStringBuffer);
+    if (hFreeResult == szErrorStringBuffer) {
+        LowLevelError(FILE_LINE);
+    }
     return szErrorString;
 }
 
 static LPSTR CreateErrorMessage(DWORD dwErrorCode, LPCSTR szErrorLocation) {
-    CHAR szErrorCode[10];
+    CHAR szErrorCode[11];
     LPSTR szErrorInfo;
-    DWORD_PTR nMessageSize;
+    SIZE_T bcMessage;
     LPSTR szMessage;
+    BOOL bFreeResult;
+
     DwordToStr(dwErrorCode, szErrorCode, 16, "0x");
     szErrorInfo = GetErrorString(dwErrorCode);
-    nMessageSize = sizeof(LOCAL_ERR_errorNumber)
-        + sizeof(szErrorCode)
-        + sizeof(LOCAL_ERR_atLocation)
+    bcMessage = sizeof(LOCAL_ERR_errorNumber) - 1 // -1 cause sizeof counts terminating null
+        + sizeof(szErrorCode) - 1
+        + sizeof(LOCAL_ERR_atLocation) - 1
         + lstrlenA(szErrorLocation)
-        + sizeof(LOCAL_ERR_moreInfo)
+        + sizeof(LOCAL_ERR_moreInfo) - 1
         + lstrlenA(szErrorInfo)
-        + 1;
-    szMessage = HeapAlloc(process.hHeap, 0, nMessageSize);
+        + 1; // one more byte for terminating null
+    szMessage = HeapAlloc(process.hHeap, 0, bcMessage);
+    if (szMessage == NULL) {
+        FatalLowLevelError(FILE_LINE);
+    }
     lstrcpyA(szMessage, LOCAL_ERR_errorNumber);
     lstrcatA(szMessage, szErrorCode);
     lstrcatA(szMessage, LOCAL_ERR_atLocation);
     lstrcatA(szMessage, szErrorLocation);
     lstrcatA(szMessage, LOCAL_ERR_moreInfo);
     lstrcatA(szMessage, szErrorInfo);
-    HeapFree(process.hHeap, 0, szErrorInfo);
+    bFreeResult = HeapFree(process.hHeap, 0, szErrorInfo);
+    if (!bFreeResult) {
+        LowLevelError(FILE_LINE);
+    }
     return szMessage;
 }
 
 VOID Error(LPCSTR szErrorLocation) {
     DWORD dwErrorCode;
     LPSTR szErrorMessage;
+
     dwErrorCode = GetLastError();
     szErrorMessage = CreateErrorMessage(dwErrorCode, szErrorLocation);
     MessageBoxA(
@@ -68,15 +91,16 @@ VOID FatalError(LPCSTR szErrorLocation) {
     ExitProcess(-1);
 }
 
-VOID EarlyError(LPCSTR szErrorLocation) {
+VOID LowLevelError(LPCSTR szErrorLocation) {
     DWORD dwErrorCode;
     CHAR szErrorCode[11];
+
     dwErrorCode = GetLastError();
     DwordToStr(dwErrorCode, szErrorCode, 16, "0x");
     MessageBoxA(0, szErrorCode, szErrorLocation, MB_ICONERROR | MB_OK);
 }
 
-VOID EarlyFatalError(LPCSTR szErrorLocation) {
-    EarlyError(szErrorLocation);
+VOID FatalLowLevelError(LPCSTR szErrorLocation) {
+    LowLevelError(szErrorLocation);
     ExitProcess(-1);
 }

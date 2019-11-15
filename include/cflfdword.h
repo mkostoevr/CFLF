@@ -4,4 +4,4 @@
 
 #include <windows.h>
 
-FUNDEC LPSTR DwordToStr(DWORD dwNumber, LPSTR szDestination, int nBase, LPCSTR szPrefix);
+FUNDEC LPSTR DwordToStr(DWORD dwNumber, LPSTR szDestination, INT nBase, LPCSTR szPrefix);

@@ -1,0 +1,12 @@
+Optimization: set window text only if game is found
+
+    cflfbot.c
+    if (nEscPressed > 100) {
+        pBot->bGameIsFound = FALSE;
+        SetWindowText(userInterface.cStatusLabel.hHandle, LOCAL_BOT_gameIsLost);
+    }
+
+Optimization: too fast esc keydown and keyup may be catched
+    cflfbot.c
+    keybd_event(VK_ESCAPE, 0x45, KEYEVENTF_EXTENDEDKEY | 0, 0);
+    keybd_event(VK_ESCAPE, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);

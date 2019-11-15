@@ -2,43 +2,25 @@
 
 VARDEF BOT bot;
 
-static VOID UpdateBotBitmap(PBOT pBot) {
-    pBot->fbmp = GetScreenBitmap();
-}
-
-static VOID FindGame(PBOT pBot) {
-    UpdateBotBitmap(pBot);
-    // this promises to be useful
-    UINT x = 0;
-    UINT y = 0;
-    // find first grow tab upper lefter pixel
-    for (y = 0; y < pBot->fbmp.lHeight; y++) {
-        for (x = 0; x < pBot->fbmp.lWidth; x++) {
-            COLORREF cPixel = GetBitmapPixel(pBot->fbmp, x, y);
-            const COLORREF cUsualFirstGrayTabUpperLefterCornerColor = 0x482927;
-            if (cPixel == cUsualFirstGrayTabUpperLefterCornerColor) {
-                const UINT bcX = 11;
-                const UINT bcY = 11;
-                const UINT bcStatus = sizeof(LOCAL_BOT_gameFirstGrayTabFoundAt) + bcX + 1 + bcY;
-                CHAR szX[bcX];
-                CHAR szY[bcY];
-                CHAR szStatus[bcStatus];
-                DwordToStr(x, szX, 10, "");
-                DwordToStr(y, szY, 10, "");
-                lstrcpyA(szStatus, LOCAL_BOT_gameFirstGrayTabFoundAt);
-                lstrcatA(szStatus, szX);
-                lstrcatA(szStatus, ":");
-                lstrcatA(szStatus, szY);
-                SetWindowText(userInterface.cStatusLabel.hHandle, szStatus);
-                goto FIRST_BROWN_TAB_UPPER_LEFTER_CORNER_COORDINATES_FOUND;
-            }
+static BOOL FreeBotBitmap(PBOT pBot) {
+    if (pBot->fbmp.hHandle != NULL) {
+        if (DeleteObject(pBot->fbmp.hHandle) == FALSE) {
+            return FALSE;
         }
     }
-    SetWindowText(userInterface.cStatusLabel.hHandle, LOCAL_BOT_gameNotFound);
-    pBot->bGameIsFound = FALSE;
-    goto CLEANUP_AND_RETURN;
-FIRST_BROWN_TAB_UPPER_LEFTER_CORNER_COORDINATES_FOUND:
-    // calculate next key points
+    pBot->fbmp.hHandle = NULL;
+    return TRUE;
+}
+
+static BOOL UpdateBotBitmap(PBOT pBot) {
+    if (FreeBotBitmap(pBot) == FALSE){
+        return FALSE;
+    }
+    pBot->fbmp = GetScreenBitmap();
+    return TRUE;
+}
+
+static VOID FindKeyPoints(PBOT pBot, UINT x, UINT y) {
     pBot->pFirstBrownTabUpperLefterCorner.x = x;
     pBot->pFirstBrownTabUpperLefterCorner.y = y;
     x += 192;
@@ -53,28 +35,77 @@ FIRST_BROWN_TAB_UPPER_LEFTER_CORNER_COORDINATES_FOUND:
     y += pBot->nGameplayArcRadius;
     pBot->pGameplayArcCenter.x = x;
     pBot->pGameplayArcCenter.y = y;
-    // trigger
-    pBot->bGameIsFound = TRUE;
-CLEANUP_AND_RETURN:
-    // free bitmap
-    DeleteObject(pBot->fbmp.hHandle);
+}
+
+static VOID FindGame(PBOT pBot) {
+    BOOL bItsTimeToStop;
+
+    bItsTimeToStop = FALSE;
+    if (UpdateBotBitmap(pBot) == FALSE) {
+        Error(FILE_LINE);
+    }
+    // find first grow tab upper lefter pixel
+    for (UINT y = 0; y < pBot->fbmp.lHeight && !bItsTimeToStop; y++) {
+        for (UINT x = 0; x < pBot->fbmp.lWidth; x++) {
+            const COLORREF cFirstGrayTabUpperLefterCornerUsual = 0x482927;
+            COLORREF cPixel;
+
+            cPixel = GetBitmapPixel(pBot->fbmp, x, y);
+            if (cPixel & 0xff000000) {
+                Error(FILE_LINE);
+                bItsTimeToStop = TRUE;
+                break;
+            }
+            if (cPixel == cFirstGrayTabUpperLefterCornerUsual) {
+                const UINT bcX = 11;
+                const UINT bcY = 11;
+                const UINT bcStatus = sizeof(LOCAL_BOT_gameFirstGrayTabFoundAt) + bcX + 1 + bcY;
+                CHAR szX[bcX];
+                CHAR szY[bcY];
+                CHAR szStatus[bcStatus];
+
+                DwordToStr(x, szX, 10, "");
+                DwordToStr(y, szY, 10, "");
+                lstrcpyA(szStatus, LOCAL_BOT_gameFirstGrayTabFoundAt);
+                lstrcatA(szStatus, szX);
+                lstrcatA(szStatus, ":");
+                lstrcatA(szStatus, szY);
+                SetWindowTextA(userInterface.cStatusLabel.hHandle, szStatus);
+                FindKeyPoints(pBot, x, y);
+                pBot->bGameIsFound = TRUE;
+                bItsTimeToStop = TRUE;
+                break;
+            }
+        }
+    }
+    if (pBot->bGameIsFound == FALSE) {
+        SetWindowTextA(userInterface.cStatusLabel.hHandle, LOCAL_BOT_gameNotFound);
+    }
     return;
 }
 
 static DWORD WINAPI BotCicle(LPVOID lpParam) {
-    PBOT pBot = lpParam;
-    static LONG nEscPressed = 0;
+    PBOT pBot;
+    LONG nEscPressed;
+    
+    pBot = lpParam;
+    nEscPressed = 0;
     pBot->bGameIsFound = FALSE;
     while (pBot->bIsWorking) {
         // without this condition the bot would try to play when its own window is in focus
         // so it would frequently press SPACE key, what activates last pressed button's click event
         // it looks ugly when after bot activating the button starts frequently click itself
         if (GetForegroundWindow() != userInterface.cMainWindow.hHandle) {
-            const COLORREF cUsualGameplayArcVertexColor = 0x33B032;
-            const COLORREF cUsualPlusButtonCenterColor = 0x614707;
-            UpdateBotBitmap(pBot);
-            if (GetBitmapPixel(pBot->fbmp, pBot->pGameplayArcVertex.x, pBot->pGameplayArcVertex.y)
-                == cUsualGameplayArcVertexColor) {
+            const COLORREF cGameplayArcVertexGreen = 0x33B032;
+            const COLORREF cPlusButtonCenterUsual = 0x614707;
+            COLORREF cGameplayArcVertex;
+            COLORREF cPlusButtonCenter;
+
+            if (UpdateBotBitmap(pBot) == FALSE) {
+                Error(FILE_LINE);
+            }
+            cGameplayArcVertex = GetBitmapPixel(pBot->fbmp, pBot->pGameplayArcVertex.x, pBot->pGameplayArcVertex.y);
+            if (cGameplayArcVertex == cGameplayArcVertexGreen) {
                 nEscPressed = 0;
                 keybd_event(VK_SPACE, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
             } else {
@@ -83,16 +114,16 @@ static DWORD WINAPI BotCicle(LPVOID lpParam) {
             // if plus center color is unusual, highly likely this is cause some window openned
             // (catched fish information, championship results, etc.)
             // anyway, each window in the game may be closed pressing ESC key
-            if (GetBitmapPixel(pBot->fbmp, pBot->pPlusButtonCenter.x, pBot->pPlusButtonCenter.y)
-                != cUsualPlusButtonCenterColor) {
-                keybd_event(VK_ESCAPE, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+            cPlusButtonCenter = GetBitmapPixel(pBot->fbmp, pBot->pPlusButtonCenter.x, pBot->pPlusButtonCenter.y);
+            if (cPlusButtonCenter != cPlusButtonCenterUsual) {
                 keybd_event(VK_ESCAPE, 0x45, KEYEVENTF_EXTENDEDKEY | 0, 0);
+                keybd_event(VK_ESCAPE, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
                 nEscPressed++;
                 // if the button has no its usual gray color, and after 100-time ESC key simulating the
                 // color not changes, that means that the game is lost, and it's time to find it again
-                if (nEscPressed > 100) {
+                if (nEscPressed > 25 && pBot->bGameIsFound == TRUE) {
                     pBot->bGameIsFound = FALSE;
-                    SetWindowText(userInterface.cStatusLabel.hHandle, LOCAL_BOT_gameIsLost);
+                    SetWindowTextA(userInterface.cStatusLabel.hHandle, LOCAL_BOT_gameIsLost);
                 }
                 if (pBot->bGameIsFound == FALSE) {
                     FindGame(pBot);
@@ -101,7 +132,6 @@ static DWORD WINAPI BotCicle(LPVOID lpParam) {
                     }
                 }
             }
-            DeleteObject(pBot->fbmp.hHandle);
         }
         Sleep(pBot->nSleepTime);
     }
@@ -111,25 +141,36 @@ static DWORD WINAPI BotCicle(LPVOID lpParam) {
 static VOID StartBot(PBOT pBot) {
     pBot->bIsWorking = TRUE;
     pBot->hThread = CreateThread(NULL, 0, BotCicle, pBot, 0, &pBot->dwThreadId);
+    if (pBot->hThread == NULL) {
+        Error(FILE_LINE);
+        SendMessage(userInterface.cBotControlButton.hHandle, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(0, 0));
+        SendMessage(userInterface.cBotControlButton.hHandle, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(0, 0));
+        return;
+    }
 }
 
 static VOID StopBot(PBOT pBot) {
     pBot->bIsWorking = FALSE;
-    CloseHandle(pBot->hThread);
+    if (pBot->hThread != NULL) {
+        if (CloseHandle(pBot->hThread) == FALSE) {
+            Error(FILE_LINE);
+        }
+    }
 }
 
 VOID InitializeBot(PBOT pBot) {
     pBot->nSleepTime = 250;
     pBot->bIsWorking = FALSE;
     pBot->bGameIsFound = FALSE;
+    pBot->fbmp.hHandle = NULL;
 }
 
 VOID SwitchBotRunningState(PBOT pBot) {
     if (pBot->bIsWorking) {
         StopBot(pBot);
-        SetWindowText(userInterface.cBotControlButton.hHandle, LOCAL_UI_start);
+        SetWindowTextA(userInterface.cBotControlButton.hHandle, LOCAL_UI_start);
     } else {
         StartBot(pBot);
-        SetWindowText(userInterface.cBotControlButton.hHandle, LOCAL_UI_stop);
+        SetWindowTextA(userInterface.cBotControlButton.hHandle, LOCAL_UI_stop);
     }
 }

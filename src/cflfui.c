@@ -103,6 +103,7 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
 static void RegisterMainWindowClass(PCONTROL pcMainWindow) {
     WNDCLASSA wc;
+
     wc.style = 0;
     wc.lpfnWndProc = WindowProc;
     wc.cbClsExtra = 0;
@@ -113,8 +114,7 @@ static void RegisterMainWindowClass(PCONTROL pcMainWindow) {
     wc.hbrBackground = NULL;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = pcMainWindow->lpClassName;
-    ATOM bClassRegistredSuccesfully = RegisterClassA(&wc);
-    if (!bClassRegistredSuccesfully) {
+    if (RegisterClassA(&wc) == 0) {
         FatalError(FILE_LINE);
     }
 }

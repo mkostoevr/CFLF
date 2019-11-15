@@ -12,10 +12,10 @@ typedef struct tagCONTROL {
     LPCSTR lpClassName;
     LPCSTR lpWindowName;
     DWORD dwStyle;
-    int X;
-    int Y;
-    int nWidth;
-    int nHeight;
+    INT X;
+    INT Y;
+    INT nWidth;
+    INT nHeight;
     HWND hWndParent;
     HMENU hMenu;
     HINSTANCE hInstance;
