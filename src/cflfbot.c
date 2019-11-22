@@ -29,10 +29,10 @@ static BOOL UpdateBotBitmap(PBOT pBot) {
 }
 
 static VOID FindKeyPoints(PBOT pBot, UINT x, UINT y) {
-    pBot->pFirstBrownTabUpperLefterCorner.x = x;
-    pBot->pFirstBrownTabUpperLefterCorner.y = y;
-    x += 192;
-    y += 40;
+    pBot->pFirstBrownTabDownerLefterCorner.y = y;
+    pBot->pFirstBrownTabDownerLefterCorner.x = x;
+    x += 87;
+    y += 17;
     pBot->pPlusButtonCenter.x = x;
     pBot->pPlusButtonCenter.y = y;
     x += 67;
@@ -53,26 +53,35 @@ static VOID FindGame(PBOT pBot) {
         Error(FILE_LINE);
     }
     // find first grow tab upper lefter pixel
-    for (UINT y = 0; y < pBot->fbmp.lHeight && !bItsTimeToStop; y++) {
+    for (UINT y = pBot->fbmp.lHeight - 1; y != 0 && !bItsTimeToStop; y--) {
         for (UINT x = 0; x < pBot->fbmp.lWidth; x++) {
-            const COLORREF cFirstGrayTabUpperLefterCornerUsual = 0x482927;
+            const COLORREF cGrayTab = 0x482927;
             COLORREF cPixel;
+			UINT nGrayPixelInRow;
 
-            cPixel = GetBitmapPixel(pBot->fbmp, x, y);
-            if (cPixel & 0xff000000) {
-                Error(FILE_LINE);
-                bItsTimeToStop = TRUE;
-                break;
-            }
-            if (cPixel == cFirstGrayTabUpperLefterCornerUsual) {
+			nGrayPixelInRow = 0;
+			for (;;) {
+				cPixel = GetBitmapPixel(pBot->fbmp, x, y);
+				if (cPixel & 0xff000000) {
+					break;
+				}
+				if (cPixel == cGrayTab) {
+					nGrayPixelInRow++;
+					x++;
+				} else {
+					break;
+				}
+			}
+            if (nGrayPixelInRow >= 100) {
                 const UINT bcX = 11;
                 const UINT bcY = 11;
                 const UINT bcStatus = sizeof(LOCAL_BOT_gameFirstGrayTabFoundAt) + bcX + 1 + bcY;
                 CHAR szX[bcX];
                 CHAR szY[bcY];
                 CHAR szStatus[bcStatus];
-
-                DwordToStr(x, szX, 10, "");
+				
+				x--; // back to gray pixel
+				DwordToStr(x, szX, 10, "");
                 DwordToStr(y, szY, 10, "");
                 lstrcpyA(szStatus, LOCAL_BOT_gameFirstGrayTabFoundAt);
                 lstrcatA(szStatus, szX);
@@ -104,7 +113,7 @@ static DWORD WINAPI BotCicle(LPVOID lpParam) {
         // so it would frequently press SPACE key, what activates last pressed button's click event
         // it looks ugly when after bot activating the button starts frequently click itself
         if (GetForegroundWindow() != userInterface.cMainWindow.hHandle) {
-            const COLORREF cGameplayArcVertexGreen = 0x33B032;
+            const COLORREF cGameplayArcVertexGreen = 0x34b133;
             const COLORREF cPlusButtonCenterUsual = 0x614707;
             COLORREF cGameplayArcVertex;
             COLORREF cPlusButtonCenter;
