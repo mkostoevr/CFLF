@@ -29,8 +29,8 @@ static BOOL UpdateBotBitmap(PBOT pBot) {
 }
 
 static VOID FindKeyPoints(PBOT pBot, UINT x, UINT y) {
-    pBot->pFirstBrownTabDownerLefterCorner.y = y;
-    pBot->pFirstBrownTabDownerLefterCorner.x = x;
+    pBot->pFirstBrownTabDownerRighterCorner.y = y;
+    pBot->pFirstBrownTabDownerRighterCorner.x = x;
     x += 87;
     y += 17;
     pBot->pPlusButtonCenter.x = x;

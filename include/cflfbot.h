@@ -5,7 +5,7 @@
 #include <windows.h>
 
 typedef struct tagBOT {
-    POINT pFirstBrownTabDownerLefterCorner;
+    POINT pFirstBrownTabDownerRighterCorner;
     POINT pPlusButtonCenter;
     POINT pGameplayArcVertex;
     POINT pGameplayArcCenter;
