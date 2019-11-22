@@ -57,21 +57,21 @@ static VOID FindGame(PBOT pBot) {
         for (UINT x = 0; x < pBot->fbmp.lWidth; x++) {
             const COLORREF cGrayTab = 0x482927;
             COLORREF cPixel;
-			UINT nGrayPixelInRow;
+            UINT nGrayPixelInRow;
 
-			nGrayPixelInRow = 0;
-			for (;;) {
-				cPixel = GetBitmapPixel(pBot->fbmp, x, y);
-				if (cPixel & 0xff000000) {
-					break;
-				}
-				if (cPixel == cGrayTab) {
-					nGrayPixelInRow++;
-					x++;
-				} else {
-					break;
-				}
-			}
+            nGrayPixelInRow = 0;
+            for (;;) {
+                cPixel = GetBitmapPixel(pBot->fbmp, x, y);
+                if (cPixel & 0xff000000) {
+                    break;
+                }
+                if (cPixel == cGrayTab) {
+                    nGrayPixelInRow++;
+                    x++;
+                } else {
+                    break;
+                }
+            }
             if (nGrayPixelInRow >= 100) {
                 const UINT bcX = 11;
                 const UINT bcY = 11;
@@ -79,9 +79,9 @@ static VOID FindGame(PBOT pBot) {
                 CHAR szX[bcX];
                 CHAR szY[bcY];
                 CHAR szStatus[bcStatus];
-				
-				x--; // back to gray pixel
-				DwordToStr(x, szX, 10, "");
+                
+                x--; // back to gray pixel
+                DwordToStr(x, szX, 10, "");
                 DwordToStr(y, szY, 10, "");
                 lstrcpyA(szStatus, LOCAL_BOT_gameFirstGrayTabFoundAt);
                 lstrcatA(szStatus, szX);
