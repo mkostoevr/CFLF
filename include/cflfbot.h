@@ -19,5 +19,6 @@ typedef struct tagBOT {
 } BOT, *PBOT;
 
 FUNDEC VOID InitializeBot(PBOT pBot);
+FUNDEC VOID DeinitializeBot(PBOT pBot);
 FUNDEC VOID SwitchBotRunningState(PBOT pBot);
 FUNDEC VOID SetBotSleepTime(PBOT pBot, DWORD dwSleepTime);

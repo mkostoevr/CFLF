@@ -169,6 +169,7 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         DestroyWindow(hWnd);
         return 0;
     case WM_DESTROY:
+        DeinitializeBot(&bot);
         PostQuitMessage(0);
         return 0;
     }

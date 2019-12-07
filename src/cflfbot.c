@@ -179,10 +179,16 @@ static VOID StopBot(PBOT pBot) {
 }
 
 VOID InitializeBot(PBOT pBot) {
-    pBot->dwSleepTime = 250;
+    if (!LoadConfigDword("dwSleepTime", &pBot->dwSleepTime, 250)) {
+        Error(FILE_LINE);
+    }
     pBot->bIsWorking = FALSE;
     pBot->bGameIsFound = FALSE;
     pBot->fbmp.hHandle = NULL;
+}
+
+VOID DeinitializeBot(PBOT pBot) {
+    SaveConfigDword("dwSleepTime", pBot->dwSleepTime);
 }
 
 VOID SwitchBotRunningState(PBOT pBot) {
