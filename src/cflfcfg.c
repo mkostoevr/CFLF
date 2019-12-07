@@ -64,7 +64,7 @@ BOOL SaveConfigDword(LPCSTR szName, DWORD dwValue) {
 }
 
 BOOL LoadConfigDword(LPCSTR szName, DWORD *dwValue, DWORD dwDefaultValue) {
-    DWORD readData = 0;
+    DWORD readData = dwDefaultValue;
     
     *dwValue = dwDefaultValue;
     if (!CreateRegistryKey(HKEY_CURRENT_USER, "SOFTWARE\\CFLF")) {
