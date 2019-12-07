@@ -95,7 +95,7 @@ static void ConfigureSleepTimeLabel(PCONTROL pcSpeedEdit) {
     pcSpeedEdit->nWidth = 215;
     pcSpeedEdit->nHeight = 21;
     pcSpeedEdit->hWndParent = userInterface.cMainWindow.hHandle;
-    pcSpeedEdit->hMenu = HMENU_SPEEDEDIT;
+    pcSpeedEdit->hMenu = NULL;
     pcSpeedEdit->hInstance = userInterface.cMainWindow.hInstance;
     pcSpeedEdit->lpParam = NULL;
 }
@@ -134,7 +134,7 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     case WM_COMMAND:
         if (LOWORD(wParam) == (DWORD)userInterface.cBotControlButton.hMenu) {
             SwitchBotRunningState(&bot);
-        } else if (LOWORD(wParam) == (DWORD)userInterface.cSleepTimeLabel.hMenu) {
+        } else if (LOWORD(wParam) == (DWORD)userInterface.cSleepTimeEdit.hMenu) {
             if (HIWORD(wParam) == EN_UPDATE) {
                 CHAR szText[8];
                 INT bcText;
