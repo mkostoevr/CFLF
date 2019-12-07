@@ -52,38 +52,38 @@ static VOID FindGame(PBOT pBot) {
     if (UpdateBotBitmap(pBot) == FALSE) {
         Error(FILE_LINE);
     }
-    // find first grow tab upper lefter pixel
+    // find first brown tab upper lefter pixel
     for (UINT y = pBot->fbmp.lHeight - 1; y != 0 && !bItsTimeToStop; y--) {
         for (UINT x = 0; x < pBot->fbmp.lWidth; x++) {
-            const COLORREF cGrayTab = 0x482927;
+            const COLORREF cBrownTab = 0x482927;
             COLORREF cPixel;
-            UINT nGrayPixelInRow;
+            UINT nBrownPixelInRow;
 
-            nGrayPixelInRow = 0;
+            nBrownPixelInRow = 0;
             for (;;) {
                 cPixel = GetBitmapPixel(pBot->fbmp, x, y);
                 if (cPixel & 0xff000000) {
                     break;
                 }
-                if (cPixel == cGrayTab) {
-                    nGrayPixelInRow++;
+                if (cPixel == cBrownTab) {
+                    nBrownPixelInRow++;
                     x++;
                 } else {
                     break;
                 }
             }
-            if (nGrayPixelInRow >= 100) {
+            if (nBrownPixelInRow >= 100) {
                 const UINT bcX = 11;
                 const UINT bcY = 11;
-                const UINT bcStatus = sizeof(LOCAL_BOT_gameFirstGrayTabFoundAt) + bcX + 1 + bcY;
+                const UINT bcStatus = sizeof(LOCAL_BOT_gameFirstBrownTabFoundAt) + bcX + 1 + bcY;
                 CHAR szX[bcX];
                 CHAR szY[bcY];
                 CHAR szStatus[bcStatus];
                 
-                x--; // back to gray pixel
+                x--; // back to brown pixel
                 DwordToStr(x, szX, 10, "");
                 DwordToStr(y, szY, 10, "");
-                lstrcpyA(szStatus, LOCAL_BOT_gameFirstGrayTabFoundAt);
+                lstrcpyA(szStatus, LOCAL_BOT_gameFirstBrownTabFoundAt);
                 lstrcatA(szStatus, szX);
                 lstrcatA(szStatus, ":");
                 lstrcatA(szStatus, szY);
