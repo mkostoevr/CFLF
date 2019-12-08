@@ -163,6 +163,17 @@ static VOID SaveWindowPosition(PCONTROL pcWindow, LPCSTR szConfigNameX, LPCSTR s
 
 static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
+    case WM_DISPLAYCHANGE:
+        if (!IsIconic(userInterface.cMainWindow.hHandle)) {        
+            AdjustMainWindowPosition(&userInterface.cMainWindow);
+            MoveWindow(userInterface.cMainWindow.hHandle,
+                       userInterface.cMainWindow.X,
+                       userInterface.cMainWindow.Y,
+                       userInterface.cMainWindow.nWidth,
+                       userInterface.cMainWindow.nHeight,
+                       FALSE);
+        }
+        break;
     case WM_MOVE:
         if (!IsIconic(userInterface.cMainWindow.hHandle)) {        
             userInterface.cMainWindow.X = (INT)(INT16)LOWORD(lParam);
