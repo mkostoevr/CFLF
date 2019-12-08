@@ -22,19 +22,54 @@ static void CreateControl(PCONTROL pcControl)
         pcControl->lpParam);
 }
 
-static void ConfigureMainWindow(PCONTROL pcMainWindow) {
+static VOID AdjustMainWindowPosition(PCONTROL pcMainWindow) {
+    RECT r;
+    INT nTitleBarButtonWitdh;
+    INT nTitleBarButtonHeight;
+    INT nOffsetFromRightBorderOfTitleBar;
+    
+    // yes, invalid coordinates can't be saved by the program
+    // but what if user will change em manually? why not?
+    if (pcMainWindow->Y < 0) {
+        pcMainWindow->Y = 0;
+    }
+    nTitleBarButtonWitdh = GetSystemMetrics(SM_CXSIZE);
+    nOffsetFromRightBorderOfTitleBar = nTitleBarButtonWitdh * 4;
+    if (pcMainWindow->X < nOffsetFromRightBorderOfTitleBar - pcMainWindow->nWidth) {
+        pcMainWindow->X = nOffsetFromRightBorderOfTitleBar - pcMainWindow->nWidth;
+    }
+    // what if display parameters was changed?
+    if (!SystemParametersInfoA(SPI_GETWORKAREA, 0, &r, 0)) {
+        Error(FILE_LINE);
+        pcMainWindow->X = CW_USEDEFAULT;
+        pcMainWindow->Y = CW_USEDEFAULT;
+        return;
+    }
+    if (pcMainWindow->X > r.right - 64) {
+        pcMainWindow->X = r.right - 64;
+    }
+    nTitleBarButtonHeight = GetSystemMetrics(SM_CYSIZE);
+    if (pcMainWindow->Y > r.bottom - nTitleBarButtonHeight) {
+        pcMainWindow->Y = r.bottom - nTitleBarButtonHeight;
+    }
+}
+
+static VOID ConfigureMainWindow(PCONTROL pcMainWindow) {
     pcMainWindow->dwExStyle = WS_EX_TOPMOST;
     pcMainWindow->lpClassName = "CFLF";
     pcMainWindow->lpWindowName = "CFLF";
-    pcMainWindow->dwStyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
-    pcMainWindow->X = CW_USEDEFAULT;
-    pcMainWindow->Y = CW_USEDEFAULT;
+    pcMainWindow->dwStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
     pcMainWindow->nWidth = 250 + 6; // to match sizes of window and its controls in modern windows
     pcMainWindow->nHeight = 400;
     pcMainWindow->hWndParent = NULL;
     pcMainWindow->hMenu = NULL;
     pcMainWindow->hInstance = process.hInstance;
     pcMainWindow->lpParam = NULL;
+    LoadConfigDword("x", (DWORD *)&pcMainWindow->X, CW_USEDEFAULT);
+    LoadConfigDword("y", (DWORD *)&pcMainWindow->Y, CW_USEDEFAULT);
+    if (pcMainWindow->X != CW_USEDEFAULT || pcMainWindow->Y != CW_USEDEFAULT) {
+        AdjustMainWindowPosition(&userInterface.cMainWindow);
+    }
 }
 
 static void ConfigureBotControlButton(PCONTROL pcBotControlButton) {
@@ -121,8 +156,19 @@ static VOID ShiftStringLeft(LPSTR szValue) {
     }
 }
 
+static VOID SaveWindowPosition(PCONTROL pcWindow, LPCSTR szConfigNameX, LPCSTR szConfigNameY) {
+    SaveConfigDword(szConfigNameX, pcWindow->X);
+    SaveConfigDword(szConfigNameY, pcWindow->Y);
+}
+
 static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
+    case WM_MOVE:
+        if (!IsIconic(userInterface.cMainWindow.hHandle)) {        
+            userInterface.cMainWindow.X = (INT)(INT16)LOWORD(lParam);
+            userInterface.cMainWindow.Y = (INT)(INT16)HIWORD(lParam);
+        }
+        return 0;
     case WM_CREATE:
         InitializeBot(&bot);
         // this message handler executes before CreateWindowEx returns, so let's save
@@ -169,6 +215,7 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         DestroyWindow(hWnd);
         return 0;
     case WM_DESTROY:
+        SaveWindowPosition(&userInterface.cMainWindow, "x", "y");
         DeinitializeBot(&bot);
         PostQuitMessage(0);
         return 0;
