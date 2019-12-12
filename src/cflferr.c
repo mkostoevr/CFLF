@@ -11,7 +11,7 @@ static LPSTR GetErrorString(DWORD dwErrorCode) {
         if (szErrorString == NULL) {
             FatalLowLevelError(FILE_LINE);
         }
-        lstrcpyA(szErrorString, LOCAL_ERR_noError);
+        strcpy(szErrorString, LOCAL_ERR_noError);
         return szErrorString;
     }
     dwErrorStringBufferSize = FormatMessageA(
@@ -30,7 +30,7 @@ static LPSTR GetErrorString(DWORD dwErrorCode) {
     if (szErrorString == NULL) {
         FatalLowLevelError(FILE_LINE);
     }
-    lstrcpyA(szErrorString, szErrorStringBuffer);
+    strcpy(szErrorString, szErrorStringBuffer);
     hFreeResult = LocalFree(szErrorStringBuffer);
     if (hFreeResult == szErrorStringBuffer) {
         LowLevelError(FILE_LINE);
@@ -45,25 +45,25 @@ static LPSTR CreateErrorMessage(DWORD dwErrorCode, LPCSTR szErrorLocation) {
     LPSTR szMessage;
     BOOL bFreeResult;
 
-    DwordToStr(dwErrorCode, szErrorCode, 16, "0x");
+    sprintf(szErrorCode, "0x%08lX", dwErrorCode);
     szErrorInfo = GetErrorString(dwErrorCode);
     bcMessage = sizeof(LOCAL_ERR_errorNumber) - 1 // -1 cause sizeof counts terminating null
         + sizeof(szErrorCode) - 1
         + sizeof(LOCAL_ERR_atLocation) - 1
-        + lstrlenA(szErrorLocation)
+        + strlen(szErrorLocation)
         + sizeof(LOCAL_ERR_moreInfo) - 1
-        + lstrlenA(szErrorInfo)
+        + strlen(szErrorInfo)
         + 1; // one more byte for terminating null
     szMessage = HeapAlloc(process.hHeap, 0, bcMessage);
     if (szMessage == NULL) {
         FatalLowLevelError(FILE_LINE);
     }
-    lstrcpyA(szMessage, LOCAL_ERR_errorNumber);
-    lstrcatA(szMessage, szErrorCode);
-    lstrcatA(szMessage, LOCAL_ERR_atLocation);
-    lstrcatA(szMessage, szErrorLocation);
-    lstrcatA(szMessage, LOCAL_ERR_moreInfo);
-    lstrcatA(szMessage, szErrorInfo);
+    strcpy(szMessage, LOCAL_ERR_errorNumber);
+    strcat(szMessage, szErrorCode);
+    strcat(szMessage, LOCAL_ERR_atLocation);
+    strcat(szMessage, szErrorLocation);
+    strcat(szMessage, LOCAL_ERR_moreInfo);
+    strcat(szMessage, szErrorInfo);
     bFreeResult = HeapFree(process.hHeap, 0, szErrorInfo);
     if (!bFreeResult) {
         LowLevelError(FILE_LINE);
@@ -96,7 +96,7 @@ VOID LowLevelError(LPCSTR szErrorLocation) {
     CHAR szErrorCode[11];
 
     dwErrorCode = GetLastError();
-    DwordToStr(dwErrorCode, szErrorCode, 16, "0x");
+    sprintf(szErrorCode, "0x%08lX", dwErrorCode);
     MessageBoxA(0, szErrorCode, szErrorLocation, MB_ICONERROR | MB_OK);
 }
 

@@ -76,17 +76,10 @@ static VOID FindGame(PBOT pBot) {
                 const UINT bcX = 11;
                 const UINT bcY = 11;
                 const UINT bcStatus = sizeof(LOCAL_BOT_gameFirstBrownTabFoundAt) + bcX + 1 + bcY;
-                CHAR szX[bcX];
-                CHAR szY[bcY];
                 CHAR szStatus[bcStatus];
                 
                 x--; // back to brown pixel
-                DwordToStr(x, szX, 10, "");
-                DwordToStr(y, szY, 10, "");
-                lstrcpyA(szStatus, LOCAL_BOT_gameFirstBrownTabFoundAt);
-                lstrcatA(szStatus, szX);
-                lstrcatA(szStatus, ":");
-                lstrcatA(szStatus, szY);
+                sprintf(szStatus, "%s%u:%u", LOCAL_BOT_gameFirstBrownTabFoundAt, x, y);
                 SetWindowTextA(userInterface.cStatusLabel.hHandle, szStatus);
                 FindKeyPoints(pBot, x, y);
                 pBot->bGameIsFound = TRUE;

@@ -4,7 +4,6 @@
 #   include "cflfbmp.c"
 #   include "cflfbot.c"
 #   include "cflfcfg.c"
-#   include "cflfdword.c"
 #   include "cflferr.c"
 #   include "cflfproc.c"
 #   include "cflfscr.c"

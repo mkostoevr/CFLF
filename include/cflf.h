@@ -10,12 +10,12 @@
 #   define VARDEF
 #endif
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #include <cflfbmp.h>
 #include <cflfbot.h>
 #include <cflfcfg.h>
-#include <cflfdword.h>
 #include <cflferr.h>
 #include <cflflocal.h>
 #include <cflfproc.h>

@@ -105,7 +105,7 @@ static void ConfigureStatusLabel(PCONTROL pcStatusLabel) {
 static void ConfigureSleepTimeEdit(PCONTROL pcSpeedEdit) {
     CHAR szSleepTime[11];
 
-    DwordToStr(bot.dwSleepTime, szSleepTime, 10, "");
+    sprintf(szSleepTime, "%lu", bot.dwSleepTime);
     pcSpeedEdit->dwExStyle = 0;
     pcSpeedEdit->lpClassName = "Edit";
     pcSpeedEdit->lpWindowName = szSleepTime;
