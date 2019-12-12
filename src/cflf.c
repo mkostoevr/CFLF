@@ -25,11 +25,9 @@ void Start() {
     ExitProcess(0);
 }
 
-// this part is hidden by macros cause the fucking golink sucks my dick too
+// this part is hidden for makefile by macros cause the fucking golink sucks my dick too
 // if main entry will be defined this stupid will say that it can't find "main" symbol
-// if you wish to compile this without makefile, just define NO_MAKEFILE and specify include path
-// gcc *.c -I../include -luser32 -lgdi32 -lkernel32 -DNO_MAKEFILE
-#ifdef NO_MAKEFILE
+#ifndef MAKEFILE
 void main() {
     Start();
 }
