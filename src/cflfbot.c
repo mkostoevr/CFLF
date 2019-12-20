@@ -164,6 +164,9 @@ static VOID StartBot(PBOT pBot) {
 
 static VOID StopBot(PBOT pBot) {
     pBot->bIsWorking = FALSE;
+    if (WaitForSingleObject(pBot->hThread, INFINITE) == WAIT_FAILED) {
+        Error(FILE_LINE);
+    }
     if (pBot->hThread != NULL) {
         if (CloseHandle(pBot->hThread) == FALSE) {
             Error(FILE_LINE);
@@ -186,6 +189,7 @@ VOID DeinitializeBot(PBOT pBot) {
 
 VOID SwitchBotRunningState(PBOT pBot) {
     if (pBot->bIsWorking) {
+        SetWindowTextA(userInterface.cBotControlButton.hHandle, LOCAL_BOT_botIsStopping);
         StopBot(pBot);
         SetWindowTextA(userInterface.cBotControlButton.hHandle, LOCAL_UI_start);
     } else {
