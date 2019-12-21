@@ -164,13 +164,14 @@ static VOID StartBot(PBOT pBot) {
 
 static VOID StopBot(PBOT pBot) {
     pBot->bIsWorking = FALSE;
-    if (WaitForSingleObject(pBot->hThread, INFINITE) == WAIT_FAILED) {
-        Error(FILE_LINE);
-    }
     if (pBot->hThread != NULL) {
+        if (WaitForSingleObject(pBot->hThread, INFINITE) == WAIT_FAILED) {
+            Error(FILE_LINE);
+        }
         if (CloseHandle(pBot->hThread) == FALSE) {
             Error(FILE_LINE);
         }
+        pBot->hThread = NULL;
     }
 }
 
