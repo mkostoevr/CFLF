@@ -4,7 +4,7 @@
 ### Simple version (relatively huge size, no icon)
 
     cd src
-    gcc *.c -I../include -luser32 -lgdi32 -lkernel32 -o ../bin/CFLF.exe -mwindows
+    gcc *.c -I../include  -ladvapi32 -luser32 -lgdi32 -lkernel32 -o ../bin/CFLF.exe -mwindows
 
 Result size for mingw-w64 i686-8.1.0-posix-dwarf-rt_v6-rev0: 73 784 Bytes
 
