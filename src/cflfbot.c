@@ -52,7 +52,7 @@ static VOID FindGame(PBOT pBot) {
     if (UpdateBotBitmap(pBot) == FALSE) {
         Error(FILE_LINE);
     }
-    // find first brown tab upper lefter pixel
+    // find first brown tab bottom right pixel
     for (UINT y = pBot->fbmp.lHeight - 1; y != 0 && !bItsTimeToStop; y--) {
         for (UINT x = 0; x < pBot->fbmp.lWidth; x++) {
             const COLORREF cBrownTab = 0x482927;
@@ -132,7 +132,7 @@ static DWORD WINAPI BotCicle(LPVOID lpParam) {
                 SleepBot(pBot);
                 keybd_event(VK_ESCAPE, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
                 nEscPressed++;
-                // if the button has no its usual gray color, and after 100-time ESC key simulating the
+                // if the button has no its usual gray color, and after 25-time ESC key simulating the
                 // color not changes, that means that the game is lost, and it's time to find it again
                 if (nEscPressed > 25 && pBot->bGameIsFound == TRUE) {
                     pBot->bGameIsFound = FALSE;

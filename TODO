@@ -1,1 +1,3 @@
-Nothing for now.
+Feature: configurable max gameplay arc angle
+Bugfix: check if thread handle is valid before waiting
+Bugfix: non-right check for pixel y after its modification

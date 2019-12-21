@@ -10,18 +10,18 @@
 #   define VARDEF
 #endif
 
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+#define FILE_LINE "(" __FILE__ ": " STR(__LINE__) ")"
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <windows.h>
 
-#include <cflfbmp.h>
-#include <cflfbot.h>
-#include <cflfcfg.h>
-#include <cflferr.h>
+#include <cflftypes.h>
+#include <cflffuncs.h>
 #include <cflflocal.h>
-#include <cflfproc.h>
-#include <cflfscr.h>
-#include <cflfui.h>
 
-VARDEC BOT bot; // cflfbot.c
-VARDEC PROCESS process; // cflfproc.c
+VARDEC BOT bot;          // cflfbot.c
+VARDEC PROCESS process;  // cflfproc.c
 VARDEC UI userInterface; // cflfui.c

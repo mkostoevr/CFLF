@@ -5,8 +5,7 @@
 
 VARDEF UI userInterface;
 
-static void CreateControl(PCONTROL pcControl)
-{
+static VOID CreateControl(PCONTROL pcControl) {
     pcControl->hHandle = CreateWindowExA(
         pcControl->dwExStyle,
         pcControl->lpClassName,
@@ -72,7 +71,7 @@ static VOID ConfigureMainWindow(PCONTROL pcMainWindow) {
     }
 }
 
-static void ConfigureBotControlButton(PCONTROL pcBotControlButton) {
+static VOID ConfigureBotControlButton(PCONTROL pcBotControlButton) {
     pcBotControlButton->dwExStyle = 0;
     pcBotControlButton->lpClassName = "Button";
     pcBotControlButton->lpWindowName = LOCAL_UI_start;
@@ -87,7 +86,7 @@ static void ConfigureBotControlButton(PCONTROL pcBotControlButton) {
     pcBotControlButton->lpParam = NULL;
 }
 
-static void ConfigureStatusLabel(PCONTROL pcStatusLabel) {
+static VOID ConfigureStatusLabel(PCONTROL pcStatusLabel) {
     pcStatusLabel->dwExStyle = 0;
     pcStatusLabel->lpClassName = "Static";
     pcStatusLabel->lpWindowName = LOCAL_UI_initialStatus;
@@ -102,7 +101,7 @@ static void ConfigureStatusLabel(PCONTROL pcStatusLabel) {
     pcStatusLabel->lpParam = NULL;
 }
 
-static void ConfigureSleepTimeEdit(PCONTROL pcSpeedEdit) {
+static VOID ConfigureSleepTimeEdit(PCONTROL pcSpeedEdit) {
     CHAR szSleepTime[11];
 
     sprintf(szSleepTime, "%lu", bot.dwSleepTime);
@@ -120,29 +119,29 @@ static void ConfigureSleepTimeEdit(PCONTROL pcSpeedEdit) {
     pcSpeedEdit->lpParam = NULL;
 }
 
-static void ConfigureSleepTimeLabel(PCONTROL pcSpeedEdit) {
-    pcSpeedEdit->dwExStyle = 0;
-    pcSpeedEdit->lpClassName = "Static";
-    pcSpeedEdit->lpWindowName = LOCAL_UI_sleepTime;
-    pcSpeedEdit->dwStyle = WS_VISIBLE | WS_CHILD | WS_BORDER | ES_CENTER;
-    pcSpeedEdit->X = 35;
-    pcSpeedEdit->Y = 80;
-    pcSpeedEdit->nWidth = 215;
-    pcSpeedEdit->nHeight = 21;
-    pcSpeedEdit->hWndParent = userInterface.cMainWindow.hHandle;
-    pcSpeedEdit->hMenu = NULL;
-    pcSpeedEdit->hInstance = userInterface.cMainWindow.hInstance;
-    pcSpeedEdit->lpParam = NULL;
+static VOID ConfigureSleepTimeLabel(PCONTROL pcSpeedLabel) {
+    pcSpeedLabel->dwExStyle = 0;
+    pcSpeedLabel->lpClassName = "Static";
+    pcSpeedLabel->lpWindowName = LOCAL_UI_sleepTime;
+    pcSpeedLabel->dwStyle = WS_VISIBLE | WS_CHILD | WS_BORDER | ES_CENTER;
+    pcSpeedLabel->X = 35;
+    pcSpeedLabel->Y = 80;
+    pcSpeedLabel->nWidth = 215;
+    pcSpeedLabel->nHeight = 21;
+    pcSpeedLabel->hWndParent = userInterface.cMainWindow.hHandle;
+    pcSpeedLabel->hMenu = NULL;
+    pcSpeedLabel->hInstance = userInterface.cMainWindow.hInstance;
+    pcSpeedLabel->lpParam = NULL;
 }
 
-static void ConfigureInterface(PUI pUserInterface) {
+static VOID ConfigureInterface(PUI pUserInterface) {
     ConfigureBotControlButton(&pUserInterface->cBotControlButton);
     ConfigureStatusLabel(&pUserInterface->cStatusLabel);
     ConfigureSleepTimeEdit(&pUserInterface->cSleepTimeEdit);
     ConfigureSleepTimeLabel(&pUserInterface->cSleepTimeLabel);
 }
 
-static void CreateInterface(PUI pUserInterface) {
+static VOID CreateInterface(PUI pUserInterface) {
     CreateControl(&pUserInterface->cBotControlButton);
     CreateControl(&pUserInterface->cStatusLabel);
     CreateControl(&pUserInterface->cSleepTimeEdit);
@@ -242,7 +241,7 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-static void RegisterMainWindowClass(PCONTROL pcMainWindow) {
+static VOID RegisterMainWindowClass(PCONTROL pcMainWindow) {
     WNDCLASSA wc;
 
     wc.style = 0;

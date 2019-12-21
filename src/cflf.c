@@ -10,7 +10,7 @@
 #   include "cflfui.c"
 #endif
 
-static void MessageLoop() {
+static VOID MessageLoop() {
     MSG msg;
     while (GetMessageA(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
@@ -18,7 +18,7 @@ static void MessageLoop() {
     }
 }
 
-void Start() {
+VOID Start() {
     InitializeProcess(&process);
     InitializeUserInterface(&userInterface);
     MessageLoop();
@@ -28,7 +28,7 @@ void Start() {
 // this part is hidden for makefile by macros cause the fucking golink sucks my dick too
 // if main entry will be defined this stupid will say that it can't find "main" symbol
 #ifndef MAKEFILE
-void main() {
+VOID main() {
     Start();
 }
 #endif

@@ -1,6 +1,6 @@
 #include <cflf.h>
 
-// call DeleteObject(pBot->fbmp.hHandle); after the functin return when don't need bitmap anymore
+// call DeleteObject on return.hHandle when don't need returned FULLBITMAP anymore
 FULLBITMAP GetScreenBitmap() {
     FULLBITMAP output;
     BITMAPINFOHEADER biHeader = { 0 };

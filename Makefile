@@ -1,5 +1,5 @@
 O=-Ofast -march=i686 -mtune=i686 -s
-LANG=-DLANG_RU
+LANG=-DLANG_EN # EN, RU
 W=-Wall -Wextra -Wpedantic
 C=i686-w64-mingw32-gcc
 L=golink # just cause this fucking shitty-ported ld sucks my dick
