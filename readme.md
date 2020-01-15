@@ -21,4 +21,4 @@ This will make small and fast executable file.
 
 Result size for mingw-w64 i686-8.1.0-posix-dwarf-rt_v6-rev0: 25 088 Bytes
 
-Exact GoRc and GoLink I used may be found in GoTools package [here](http://boppan.org/share/CFLF_GoTools.zip).
+Exact GoRc and GoLink I used may be found in GoTools package [here](http://boppan.org/file/CFLF_GoTools.zip).
