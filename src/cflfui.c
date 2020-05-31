@@ -2,6 +2,7 @@
 
 #define HMENU_BOTCONTROLBUTTON ((HMENU)43)
 #define HMENU_SPEEDEDIT ((HMENU)44)
+#define HMENU_ANGLETRACKBAR ((HMENU)45)
 
 VARDEF UI userInterface;
 
@@ -134,11 +135,27 @@ static VOID ConfigureSleepTimeLabel(PCONTROL pcSpeedLabel) {
     pcSpeedLabel->lpParam = NULL;
 }
 
+static VOID ConfigureAngleTrackbar(PCONTROL pcAngleTrackbar) {
+    pcAngleTrackbar->dwExStyle = 0;
+    pcAngleTrackbar->lpClassName = TRACKBAR_CLASS;
+    pcAngleTrackbar->lpWindowName = NULL;
+    pcAngleTrackbar->dwStyle = WS_VISIBLE | WS_CHILD | TBS_HORZ;
+    pcAngleTrackbar->X = 0;
+    pcAngleTrackbar->Y = 101;
+    pcAngleTrackbar->nWidth = 250;
+    pcAngleTrackbar->nHeight = 21;
+    pcAngleTrackbar->hWndParent = userInterface.cMainWindow.hHandle;
+    pcAngleTrackbar->hMenu = HMENU_ANGLETRACKBAR;
+    pcAngleTrackbar->hInstance = userInterface.cMainWindow.hInstance;
+    pcAngleTrackbar->lpParam = NULL;
+}
+
 static VOID ConfigureInterface(PUI pUserInterface) {
     ConfigureBotControlButton(&pUserInterface->cBotControlButton);
     ConfigureStatusLabel(&pUserInterface->cStatusLabel);
     ConfigureSleepTimeEdit(&pUserInterface->cSleepTimeEdit);
     ConfigureSleepTimeLabel(&pUserInterface->cSleepTimeLabel);
+    ConfigureAngleTrackbar(&pUserInterface->cAngleTrackbar);
 }
 
 static VOID CreateInterface(PUI pUserInterface) {
@@ -146,6 +163,9 @@ static VOID CreateInterface(PUI pUserInterface) {
     CreateControl(&pUserInterface->cStatusLabel);
     CreateControl(&pUserInterface->cSleepTimeEdit);
     CreateControl(&pUserInterface->cSleepTimeLabel);
+    CreateControl(&pUserInterface->cAngleTrackbar);
+    SendMessageA(pUserInterface->cAngleTrackbar.hHandle, TBM_SETRANGE, FALSE, MAKELPARAM(30, 150));
+    SendMessageA(pUserInterface->cAngleTrackbar.hHandle, TBM_SETPOS, TRUE, bot.dwCatchingAngle);
 }
 
 static VOID ShiftStringLeft(LPSTR szValue) {
@@ -194,6 +214,14 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         userInterface.cMainWindow.hHandle = hWnd;
         ConfigureInterface(&userInterface);
         CreateInterface(&userInterface);
+        return 0;
+    case WM_HSCROLL:
+        if (lParam == (LPARAM)userInterface.cAngleTrackbar.hHandle) {
+            DWORD dwAngle;
+
+            dwAngle = SendMessageA(userInterface.cAngleTrackbar.hHandle, TBM_GETPOS, 0, 0);
+            SetBotCatchingAngle(&bot, dwAngle);
+        }
         return 0;
     case WM_COMMAND:
         if (LOWORD(wParam) == (DWORD)userInterface.cBotControlButton.hMenu) {

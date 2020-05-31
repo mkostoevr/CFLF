@@ -39,7 +39,6 @@ static VOID FindKeyPoints(PBOT pBot, UINT x, UINT y) {
     y += 241;
     pBot->pGameplayArcVertex.x = x;
     pBot->pGameplayArcVertex.y = y;
-    pBot->nGameplayArcRadius = 136;
     y += pBot->nGameplayArcRadius;
     pBot->pGameplayArcCenter.x = x;
     pBot->pGameplayArcCenter.y = y;
@@ -97,9 +96,11 @@ static VOID FindGame(PBOT pBot) {
 static DWORD WINAPI BotCicle(LPVOID lpParam) {
     PBOT pBot;
     LONG nEscPressed;
+    BOOL bItsTimeToPlay;
     
     pBot = lpParam;
     nEscPressed = 0;
+    bItsTimeToPlay = FALSE;
     pBot->bGameIsFound = FALSE;
     while (pBot->bIsWorking) {
         // without this condition the bot would try to play when its own window is in focus
@@ -107,6 +108,7 @@ static DWORD WINAPI BotCicle(LPVOID lpParam) {
         // it looks ugly when after bot activating the button starts frequently click itself
         if (GetForegroundWindow() != userInterface.cMainWindow.hHandle) {
             const COLORREF cGameplayArcVertexGreen = 0x34b133;
+            const COLORREF cGameplayArcVertexBlue = 0x3d6387;
             const COLORREF cPlusButtonCenterUsual = 0x614707;
             COLORREF cGameplayArcVertex;
             COLORREF cPlusButtonCenter;
@@ -114,18 +116,13 @@ static DWORD WINAPI BotCicle(LPVOID lpParam) {
             if (UpdateBotBitmap(pBot) == FALSE) {
                 Error(FILE_LINE);
             }
-            cGameplayArcVertex = GetBitmapPixel(pBot->fbmp, pBot->pGameplayArcVertex.x, pBot->pGameplayArcVertex.y);
-            if (cGameplayArcVertex == cGameplayArcVertexGreen) {
-                nEscPressed = 0;
-                keybd_event(VK_SPACE, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-            } else {
-                keybd_event(VK_SPACE, 0x45, KEYEVENTF_EXTENDEDKEY | 0, 0);
-            }
             // if plus center color is unusual, highly likely this is cause some window openned
             // (catched fish information, championship results, etc.)
             // anyway, each window in the game may be closed pressing ESC key
             cPlusButtonCenter = GetBitmapPixel(pBot->fbmp, pBot->pPlusButtonCenter.x, pBot->pPlusButtonCenter.y);
             if (cPlusButtonCenter != cPlusButtonCenterUsual) {
+                // no usual color = no gameplay arc = no reason to play
+                bItsTimeToPlay = FALSE;
                 // if bot won't sleep here, before and between keyboard emulation, it may be detected
                 SleepBot(pBot);
                 keybd_event(VK_ESCAPE, 0x45, KEYEVENTF_EXTENDEDKEY | 0, 0);
@@ -143,6 +140,28 @@ static DWORD WINAPI BotCicle(LPVOID lpParam) {
                     if (pBot->bGameIsFound == TRUE) {
                         nEscPressed = 0;
                     }
+                }
+            } else {
+                // if color of gameplay arc's vertex is blue or green, that means that the minigame started
+                cGameplayArcVertex = GetBitmapPixel(pBot->fbmp, pBot->pGameplayArcVertex.x, pBot->pGameplayArcVertex.y);
+                if (cGameplayArcVertex == cGameplayArcVertexBlue ||
+                    cGameplayArcVertex == cGameplayArcVertexGreen) {
+                    bItsTimeToPlay = TRUE;
+                } else {
+                    // try to start the minigame if it isn't started
+                    keybd_event(VK_SPACE, 0x45, KEYEVENTF_EXTENDEDKEY | 0, 0);
+                }
+            }
+            if (bItsTimeToPlay) {
+                cGameplayArcVertex = GetBitmapPixel(pBot->fbmp,
+                                                    pBot->pGameplayArcVertex.x + pBot->pGameplayArcCatchPointOffset.x,
+                                                    pBot->pGameplayArcCenter.y + pBot->pGameplayArcCatchPointOffset.y);
+                if (cGameplayArcVertex == cGameplayArcVertexBlue) {
+                    keybd_event(VK_SPACE, 0x45, KEYEVENTF_EXTENDEDKEY | 0, 0);
+                } else {
+                    nEscPressed = 0;
+                    // XXX: possible detection - more ups than downs
+                    keybd_event(VK_SPACE, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
                 }
             }
         }
@@ -179,6 +198,11 @@ VOID InitializeBot(PBOT pBot) {
     if (!LoadConfigDword("dwSleepTime", &pBot->dwSleepTime, 250)) {
         Error(FILE_LINE);
     }
+    if (!LoadConfigDword("dwCatchingAngle", &pBot->dwCatchingAngle, 90)) {
+        Error(FILE_LINE);
+    }
+    pBot->nGameplayArcRadius = 136;
+    SetBotCatchingAngle(pBot, pBot->dwCatchingAngle);
     pBot->bIsWorking = FALSE;
     pBot->bGameIsFound = FALSE;
     pBot->fbmp.hHandle = NULL;
@@ -186,6 +210,7 @@ VOID InitializeBot(PBOT pBot) {
 
 VOID DeinitializeBot(PBOT pBot) {
     SaveConfigDword("dwSleepTime", pBot->dwSleepTime);
+    SaveConfigDword("dwCatchingAngle", pBot->dwCatchingAngle);
 }
 
 VOID SwitchBotRunningState(PBOT pBot) {
@@ -201,4 +226,13 @@ VOID SwitchBotRunningState(PBOT pBot) {
 
 VOID SetBotSleepTime(PBOT pBot, DWORD dwSleepTime) {
     pBot->dwSleepTime = dwSleepTime;
+}
+
+VOID SetBotCatchingAngle(PBOT pBot, DWORD dwCatchingAngle) {
+    DOUBLE fCatchingAngle;
+
+    fCatchingAngle = dwCatchingAngle * 3.14 / 180.0;
+    pBot->dwCatchingAngle = dwCatchingAngle;
+    pBot->pGameplayArcCatchPointOffset.x = pBot->nGameplayArcRadius * cos(fCatchingAngle) * -1.0;
+    pBot->pGameplayArcCatchPointOffset.y = pBot->nGameplayArcRadius * sin(fCatchingAngle) * -1.0;
 }

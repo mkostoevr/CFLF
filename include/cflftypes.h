@@ -18,6 +18,8 @@ typedef struct tagBOT {
     DWORD dwThreadId;
     HANDLE hThread;
     DWORD dwSleepTime;
+    DWORD dwCatchingAngle;
+    POINT pGameplayArcCatchPointOffset; // relative to GameplayArcVertex coordinates of point where to catch
 } BOT, *PBOT;
 
 typedef struct tagPROCESS {
@@ -47,4 +49,5 @@ typedef struct tagUI {
     CONTROL cStatusLabel;
     CONTROL cSleepTimeEdit;
     CONTROL cSleepTimeLabel;
+    CONTROL cAngleTrackbar;
 } UI, *PUI;
